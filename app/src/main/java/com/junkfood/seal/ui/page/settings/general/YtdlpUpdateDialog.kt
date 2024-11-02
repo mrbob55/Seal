@@ -9,6 +9,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.SyncAlt
@@ -25,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -35,10 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.junkfood.seal.R
 import com.junkfood.seal.ui.common.booleanState
 import com.junkfood.seal.ui.common.intState
+import com.junkfood.seal.ui.common.stringState
 import com.junkfood.seal.ui.component.ConfirmButton
 import com.junkfood.seal.ui.component.DismissButton
 import com.junkfood.seal.ui.component.SealDialog
@@ -47,12 +51,15 @@ import com.junkfood.seal.util.PreferenceUtil.getLong
 import com.junkfood.seal.util.PreferenceUtil.updateBoolean
 import com.junkfood.seal.util.PreferenceUtil.updateInt
 import com.junkfood.seal.util.PreferenceUtil.updateLong
+import com.junkfood.seal.util.PreferenceUtil.updateString
 import com.junkfood.seal.util.UpdateIntervalList
 import com.junkfood.seal.util.YT_DLP_AUTO_UPDATE
 import com.junkfood.seal.util.YT_DLP_NIGHTLY
 import com.junkfood.seal.util.YT_DLP_STABLE
 import com.junkfood.seal.util.YT_DLP_UPDATE_CHANNEL
 import com.junkfood.seal.util.YT_DLP_UPDATE_INTERVAL
+import com.junkfood.seal.util.CUSTOM_YT_DLP_URL
+import com.junkfood.seal.util.YT_DLP_CUSTOM
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.iterator
@@ -100,6 +107,7 @@ fun YtdlpUpdateChannelDialog(modifier: Modifier = Modifier, onDismissRequest: ()
     var ytdlpUpdateChannel by YT_DLP_UPDATE_CHANNEL.intState
     var ytdlpAutoUpdate by YT_DLP_AUTO_UPDATE.booleanState
     var updateInterval by remember { mutableLongStateOf(YT_DLP_UPDATE_INTERVAL.getLong()) }
+    var customYtDlpUrl by CUSTOM_YT_DLP_URL.stringState
 
     SealDialog(
         modifier = modifier,
@@ -109,6 +117,7 @@ fun YtdlpUpdateChannelDialog(modifier: Modifier = Modifier, onDismissRequest: ()
                 YT_DLP_AUTO_UPDATE.updateBoolean(ytdlpAutoUpdate)
                 YT_DLP_UPDATE_CHANNEL.updateInt(ytdlpUpdateChannel)
                 YT_DLP_UPDATE_INTERVAL.updateLong(updateInterval)
+                CUSTOM_YT_DLP_URL.updateString(customYtDlpUrl)
                 onDismissRequest()
             }
         },
@@ -145,6 +154,16 @@ fun YtdlpUpdateChannelDialog(modifier: Modifier = Modifier, onDismissRequest: ()
                         labelContainerColor = MaterialTheme.colorScheme.tertiary,
                     ) {
                         ytdlpUpdateChannel = YT_DLP_NIGHTLY
+                    }
+                }
+                item {
+                    DialogSingleChoiceItem(
+                        text = "custom",
+                        selected = ytdlpUpdateChannel == YT_DLP_CUSTOM,
+                        label = "Custom",
+                        labelContainerColor = MaterialTheme.colorScheme.secondary
+                    ) {
+                        ytdlpUpdateChannel = YT_DLP_CUSTOM
                     }
                 }
                 item {
@@ -205,6 +224,23 @@ fun YtdlpUpdateChannelDialog(modifier: Modifier = Modifier, onDismissRequest: ()
                             }
                         }
                     }
+                }
+                item {
+                    OutlinedTextField(
+                        enabled = ytdlpUpdateChannel == YT_DLP_CUSTOM,
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        value = customYtDlpUrl,
+                        label = { Text("Custom yt-dlp build") },
+                        supportingText = {
+                            Text(
+                                "https://api.github.com/repos/.../releases/latest"
+                            )
+                        },
+                        onValueChange = {
+                            customYtDlpUrl = it
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                    )
                 }
             }
         },

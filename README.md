@@ -1,3 +1,8 @@
+This is a simple fork that allows a custom yt-dlp version to be used.
+
+
+---
+
 <div align="center">
 
 <img width="" src="fastlane/metadata/android/en-US/images/icon.png"  width=160 height=160  align="center">
