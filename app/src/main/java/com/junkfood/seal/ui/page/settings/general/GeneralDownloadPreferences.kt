@@ -15,6 +15,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Archive
@@ -69,6 +70,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -90,6 +92,7 @@ import com.junkfood.seal.ui.component.SealDialog
 import com.junkfood.seal.ui.page.download.NotificationPermissionDialog
 import com.junkfood.seal.util.CONFIGURE
 import com.junkfood.seal.util.CUSTOM_COMMAND
+import com.junkfood.seal.util.CUSTOM_YT_DLP_URL
 import com.junkfood.seal.util.DEBUG
 import com.junkfood.seal.util.DISABLE_PREVIEW
 import com.junkfood.seal.util.DOWNLOAD_ARCHIVE
@@ -105,6 +108,7 @@ import com.junkfood.seal.util.PreferenceUtil.getString
 import com.junkfood.seal.util.PreferenceUtil.updateBoolean
 import com.junkfood.seal.util.PreferenceUtil.updateInt
 import com.junkfood.seal.util.PreferenceUtil.updateLong
+import com.junkfood.seal.util.PreferenceUtil.updateString
 import com.junkfood.seal.util.SPONSORBLOCK
 import com.junkfood.seal.util.SUBTITLE
 import com.junkfood.seal.util.THUMBNAIL
@@ -112,6 +116,7 @@ import com.junkfood.seal.util.ToastUtil
 import com.junkfood.seal.util.UpdateIntervalList
 import com.junkfood.seal.util.UpdateUtil
 import com.junkfood.seal.util.YT_DLP_AUTO_UPDATE
+import com.junkfood.seal.util.YT_DLP_CUSTOM
 import com.junkfood.seal.util.YT_DLP_NIGHTLY
 import com.junkfood.seal.util.YT_DLP_STABLE
 import com.junkfood.seal.util.YT_DLP_UPDATE_CHANNEL
@@ -434,6 +439,7 @@ fun GeneralDownloadPreferences(
         var ytdlpUpdateChannel by YT_DLP_UPDATE_CHANNEL.intState
         var ytdlpAutoUpdate by YT_DLP_AUTO_UPDATE.booleanState
         var updateInterval by remember { mutableLongStateOf(YT_DLP_UPDATE_INTERVAL.getLong()) }
+        var customYtDlpUrl by remember { mutableStateOf(CUSTOM_YT_DLP_URL.getString()) }
 
         SealDialog(
             onDismissRequest = { showYtdlpDialog = false },
@@ -442,6 +448,7 @@ fun GeneralDownloadPreferences(
                     YT_DLP_AUTO_UPDATE.updateBoolean(ytdlpAutoUpdate)
                     YT_DLP_UPDATE_CHANNEL.updateInt(ytdlpUpdateChannel)
                     YT_DLP_UPDATE_INTERVAL.updateLong(updateInterval)
+                    CUSTOM_YT_DLP_URL.updateString(customYtDlpUrl)
                     showYtdlpDialog = false
                 }
             },
@@ -482,6 +489,16 @@ fun GeneralDownloadPreferences(
                             labelContainerColor = MaterialTheme.colorScheme.tertiary
                         ) {
                             ytdlpUpdateChannel = YT_DLP_NIGHTLY
+                        }
+                    }
+                    item {
+                        DialogSingleChoiceItem(
+                            text = "custom",
+                            selected = ytdlpUpdateChannel == YT_DLP_CUSTOM,
+                            label = "Custom",
+                            labelContainerColor = MaterialTheme.colorScheme.secondary
+                        ) {
+                            ytdlpUpdateChannel = YT_DLP_CUSTOM
                         }
                     }
                     item {
@@ -537,6 +554,23 @@ fun GeneralDownloadPreferences(
                                 }
                             }
                         }
+                    }
+                    item {
+                        OutlinedTextField(
+                            enabled = ytdlpUpdateChannel == YT_DLP_CUSTOM,
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            value = customYtDlpUrl,
+                            label = { Text("Custom yt-dlp build") },
+                            supportingText = {
+                                Text(
+                                    "https://api.github.com/repos/.../releases/latest"
+                                )
+                            },
+                            onValueChange = {
+                                customYtDlpUrl = it
+                            },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                        )
                     }
                 }
             },

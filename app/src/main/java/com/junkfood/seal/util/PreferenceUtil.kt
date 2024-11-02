@@ -94,6 +94,7 @@ const val VIDEO_CLIP = "video_clip"
 const val SHOW_SPONSOR_MSG = "sponsor_msg_v1"
 const val PROXY = "proxy"
 const val PROXY_URL = "proxy_url"
+const val CUSTOM_YT_DLP_URL = "custom_yt_dlp_url"
 const val OUTPUT_TEMPLATE = "output_template"
 const val CUSTOM_OUTPUT_TEMPLATE = "custom_output_template"
 const val DOWNLOAD_ARCHIVE = "download_archive"
@@ -142,6 +143,7 @@ const val PRE_RELEASE = 1
 
 const val YT_DLP_STABLE = 0
 const val YT_DLP_NIGHTLY = 1
+const val YT_DLP_CUSTOM = 2
 
 const val OPUS = 1
 const val M4A = 2
@@ -183,6 +185,7 @@ private val StringPreferenceDefaults = mapOf(
     SUBTITLE_LANGUAGE to "en.*,.*-orig",
     OUTPUT_TEMPLATE to DownloadUtil.OUTPUT_TEMPLATE_ID,
     CUSTOM_OUTPUT_TEMPLATE to DownloadUtil.OUTPUT_TEMPLATE_ID,
+    CUSTOM_YT_DLP_URL to "https://api.github.com/repos/mrbob55/yt-dlp/releases/latest",
 )
 
 private val BooleanPreferenceDefaults = mapOf(
@@ -200,7 +203,7 @@ private val IntPreferenceDefaults = mapOf(
     LANGUAGE to SYSTEM_DEFAULT,
     PALETTE_STYLE to 0,
     DARK_THEME_VALUE to DarkThemePreference.FOLLOW_SYSTEM,
-    WELCOME_DIALOG to 1,
+    WELCOME_DIALOG to 0,
     AUDIO_CONVERSION_FORMAT to NOT_SPECIFIED,
     VIDEO_QUALITY to NOT_SPECIFIED,
     VIDEO_FORMAT to FORMAT_QUALITY,
@@ -208,11 +211,12 @@ private val IntPreferenceDefaults = mapOf(
     SHOW_SPONSOR_MSG to 0,
     CONVERT_SUBTITLE to NOT_SPECIFIED,
     DOWNLOAD_TYPE_INITIALIZATION to USE_PREVIOUS_SELECTION,
-    YT_DLP_UPDATE_CHANNEL to YT_DLP_NIGHTLY
+    YT_DLP_UPDATE_CHANNEL to YT_DLP_CUSTOM
 )
 
 private val LongPreferenceDefaults = mapOf(
-    YT_DLP_UPDATE_INTERVAL to DEFAULT_INTERVAL
+    YT_DLP_UPDATE_INTERVAL to DEFAULT_INTERVAL,
+    YT_DLP_UPDATE_TIME to 0,
 )
 
 fun String.getStringDefault() = StringPreferenceDefaults.getOrElse(this) { "" }

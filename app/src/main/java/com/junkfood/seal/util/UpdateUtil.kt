@@ -11,6 +11,7 @@ import com.junkfood.seal.App.Companion.context
 import com.junkfood.seal.R
 import com.junkfood.seal.util.FileUtil.getFileProvider
 import com.junkfood.seal.util.PreferenceUtil.getInt
+import com.junkfood.seal.util.PreferenceUtil.getString
 import com.junkfood.seal.util.PreferenceUtil.updateLong
 import com.yausername.youtubedl_android.YoutubeDL
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,7 @@ import java.util.regex.Pattern
 
 object UpdateUtil {
 
-    private const val OWNER = "JunkFood02"
+    private const val OWNER = "mrbob55"
     private const val REPO = "Seal"
     private const val ARM64 = "arm64-v8a"
     private const val ARM32 = "armeabi-v7a"
@@ -56,6 +57,10 @@ object UpdateUtil {
     suspend fun updateYtDlp(): YoutubeDL.UpdateStatus? =
         withContext(Dispatchers.IO) {
             val channel = when (YT_DLP_UPDATE_CHANNEL.getInt()) {
+                YT_DLP_CUSTOM -> {
+                    val customYtDlpUrl: String = CUSTOM_YT_DLP_URL.getString();
+                    YoutubeDL.UpdateChannel(customYtDlpUrl)
+                }
                 YT_DLP_NIGHTLY -> YoutubeDL.UpdateChannel.NIGHTLY
                 else -> YoutubeDL.UpdateChannel.STABLE
             }
